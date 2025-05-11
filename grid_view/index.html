@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid-View</title>
+  </head>
+  <body>
+    <div style="padding-bottom: 10px">
+      <label for="gridsize">Select grid size</label>
+      <input
+        name="gridsize"
+        id="gridsize"
+        type="number"
+        placeholder="grid-size"
+        value="6"
+        min="1"
+      />
+      <label for="select_color" style="padding-left: 5px">| Select Color</label>
+      <input
+        type="color"
+        id="select_color"
+        name="select_color"
+        value="#eccfcf"
+      />
+      <input type="checkbox" id="is_gray" name="is_gray" checked />
+      <label for="is_gray">Is gray</label>
+      <label for="file_select" style="padding-left: 5px">| Select File</label>
+      <input
+        type="file"
+        id="file_select"
+        accept=".jpg,.png"
+        name="file_select"
+      />
+      <label for="img_src" style="padding-left: 5px">| Put image source</label>
+      <input
+        name="img_src"
+        id="img_src"
+        type="text"
+        placeholder="image source"
+        value="https://raw.githubusercontent.com/yavuzceliker/sample-images/main/images/image-2.jpg"
+      />
+    </div>
+
+    <div
+      id="grid_parent"
+      style="width: 400px; margin: 0 auto; position: relative"
+    >
+      <img
+        style="width: 400px; position: absolute; filter: grayscale(100%)"
+        src="https://raw.githubusercontent.com/yavuzceliker/sample-images/main/images/image-2.jpg"
+        id="image"
+      />
+      <div
+        id="grid"
+        style="width: 400px; font-size: 0; position: absolute"
+      ></div>
+    </div>
+  </body>
+  <script>
+    document.querySelector("#gridsize").addEventListener("input", () => {
+      regrid();
+    });
+    document.querySelector("#is_gray").addEventListener("input", () => {
+      let is_gray = document.querySelector("#is_gray").checked;
+      if (is_gray) {
+        document.getElementById("image").style.filter = "grayscale(100%)";
+      } else {
+        document.getElementById("image").style.filter = "grayscale(0%)";
+      }
+    });
+    document.querySelector("#img_src").addEventListener("input", () => {
+      document.getElementById("image").src =
+        document.querySelector("#img_src").value;
+    });
+    document.querySelector("#select_color").addEventListener("input", () => {
+      regrid();
+    });
+    window.addEventListener("resize", () => {
+      regrid();
+    });
+    document
+      .getElementById("file_select")
+      .addEventListener("change", function (event) {
+        let file = event.target.files[0]; // Get the selected file
+        if (file) {
+          let reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById("image").src = e.target.result; // Set image src
+          };
+          reader.readAsDataURL(file); // Convert file to base64 URL
+        }
+      });
+    let gridWidth = Math.floor(document.body.clientWidth * 0.8); // at init
+    function regrid() {
+      document.querySelector("#grid_parent").style.width = gridWidth + "px";
+      document.querySelector("#image").style.width = gridWidth + "px";
+      document.querySelector("#grid").style.width = gridWidth + "px";
+
+      let rowBoxCount = +document.querySelector("#gridsize").value;
+      let numBoxes = rowBoxCount * rowBoxCount * 2;
+      let boxSize = Math.floor(gridWidth / rowBoxCount);
+
+      document.querySelector("#grid").innerHTML = "";
+      for (let l = 0; l < numBoxes; l++) {
+        let singleBox = document.createElement("div");
+        Object.assign(singleBox.style, {
+          backgroundColor: "transparent",
+          "box-shadow":
+            "-1px -1px 0 0 " + document.querySelector("#select_color").value,
+          width: boxSize + "px",
+          height: boxSize + "px",
+          display: "inline-block",
+        });
+        document.querySelector("#grid").append(singleBox);
+      }
+    }
+    regrid();
+  </script>
+</html>

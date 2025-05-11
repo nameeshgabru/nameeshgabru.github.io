@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clock</title>
+  </head>
+  <body>
+    <div style="display: flex; justify-content: center; align-items: center">
+      <label for="timer"></label>
+      <input type="number" name="timer" id="timer" value="10" />
+    </div>
+    <div
+      class="clock"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+        font-size: 15vw;
+      "
+    ></div>
+    <audio style="display: none" controls>
+      <source src="sound.wav" />
+      Your browser does not support the audio element.
+    </audio>
+    <script>
+      let timer, timerAt, timerAtTimer;
+      setInterval(() => {
+        document.querySelector("div.clock").innerHTML =
+          new Date().toLocaleTimeString();
+      }, 1000);
+      newTimer();
+      document.querySelector("input").addEventListener("input", () => {
+        newTimer();
+      });
+      function convertMilliseconds(ms) {
+        const hours = Math.floor(ms / 3600000);
+        ms %= 3600000;
+        const minutes = Math.floor(ms / 60000);
+        ms %= 60000;
+        const seconds = Math.floor(ms / 1000);
+        return {
+          hours: hours,
+          minutes: minutes,
+          seconds: seconds,
+        };
+      }
+      function newTimer() {
+        if (document.querySelector("input").value !== "") {
+          let timerInMS = +document.querySelector("input").value * 60 * 1000;
+          clearTimeout(timer);
+          clearInterval(timerAtTimer);
+          document.querySelector("audio").pause();
+          document.querySelector("audio").currentTime = 0;
+          timer = setTimeout(() => {
+            document.querySelector("audio").play();
+          }, timerInMS);
+          timerAt = new Date(Date.now() + timerInMS);
+          timerAtTimer = setInterval(() => {
+            let alarmIn = convertMilliseconds(timerAt.getTime() - new Date().getTime());
+            document.querySelector(
+              "label"
+            ).innerHTML = `Alarm in ${alarmIn.hours} H ${alarmIn.minutes} M ${alarmIn.seconds} S at ${timerAt.toLocaleTimeString()}......`;
+          }, 1000);
+        }
+      }
+    </script>
+  </body>
+</html>
