@@ -56,7 +56,12 @@
       ></div>
       <div
         id="svg"
-        style="width: 400px; height: 800px; position: absolute"
+        style="
+          width: 400px;
+          height: 800px;
+          position: absolute;
+          touch-action: pinch-zoom;
+        "
       ></div>
     </div>
   </body>
@@ -19013,7 +19018,6 @@
     let svg = svgDiv
       .append("svg")
       .attr("id", "mySVG")
-      .style("touch-action", "none")
       .attr("width", gridWidth)
       .attr("height", gridWidth * 2);
     let linesArr = [];
@@ -19089,15 +19093,13 @@
       .on("end", (event, d) => {
         d3.select(event.sourceEvent.target).style("fill", cirColor);
       });
-      const dragLine = d3
-      .drag()
-      .on("drag", (event, d) => {
-        linesArr[d.id]["x1"] += event.dx;
-        linesArr[d.id]["y1"] += event.dy;
-        linesArr[d.id]["x2"] += event.dx;
-        linesArr[d.id]["y2"] += event.dy;
-        updateLines();
-      });
+    const dragLine = d3.drag().on("drag", (event, d) => {
+      linesArr[d.id]["x1"] += event.dx;
+      linesArr[d.id]["y1"] += event.dy;
+      linesArr[d.id]["x2"] += event.dx;
+      linesArr[d.id]["y2"] += event.dy;
+      updateLines();
+    });
     function updateLines() {
       const lines = svg.selectAll("line").data(linesArr, (d) => d.id);
       lines.exit().remove();
@@ -19117,6 +19119,13 @@
         .attr("x2", (d) => d.x2)
         .attr("y2", (d) => d.y2)
         .call(dragLine);
+      let pressTimer;
+      let contextFunction = (d) => {
+        pressTimer = setTimeout(() => {
+          linesArr.splice(d.id, 1);
+          updateLines();
+        }, 600);
+      };
       const circle1 = svg.selectAll("circle.c1").data(linesArr, (d) => d.id);
       circle1.exit().remove();
       circle1.attr("cx", (d) => d.x1).attr("cy", (d) => d.y1);
@@ -19132,6 +19141,12 @@
           event.preventDefault();
           linesArr.splice(d.id, 1);
           updateLines();
+        })
+        .on("touchstart", function (event, d) {
+          contextFunction(d);
+        })
+        .on("touchend touchmove", function (event, d) {
+          clearTimeout(pressTimer);
         })
         .call(drag1);
 
