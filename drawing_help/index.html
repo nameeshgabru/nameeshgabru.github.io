@@ -38,7 +38,7 @@
         id="img_src"
         type="text"
         placeholder="image source"
-        value="https://santabanta.com/wallpapers/full5/animals/dogs/dogs-310a.jpg"
+        value="https://santabanta.com/wallpapers/full5/nature/birds/birds-429a.jpg"
       />
     </div>
 
@@ -48,7 +48,7 @@
     >
       <img
         style="width: 400px; position: absolute; filter: grayscale(100%)"
-        src="https://santabanta.com/wallpapers/full5/animals/dogs/dogs-310a.jpg"
+        src="https://santabanta.com/wallpapers/full5/nature/birds/birds-429a.jpg"
         id="image"
       />
       <div
@@ -19014,6 +19014,7 @@
     let svg = svgDiv
       .append("svg")
       .attr("id", "mySVG")
+      .style("touch-action", "none")
       .attr("width", gridWidth)
       .attr("height", gridWidth * 2);
     let linesArr = [];
@@ -19089,6 +19090,15 @@
       .on("end", (event, d) => {
         d3.select(event.sourceEvent.target).style("fill", cirColor);
       });
+      const dragLine = d3
+      .drag()
+      .on("drag", (event, d) => {
+        linesArr[d.id]["x1"] += event.dx;
+        linesArr[d.id]["y1"] += event.dy;
+        linesArr[d.id]["x2"] += event.dx;
+        linesArr[d.id]["y2"] += event.dy;
+        updateLines();
+      });
     function updateLines() {
       const lines = svg.selectAll("line").data(linesArr, (d) => d.id);
       lines.exit().remove();
@@ -19102,10 +19112,12 @@
         .enter()
         .append("line")
         .style("stroke", document.querySelector("#select_color").value)
+        .style("stroke-width", "4px")
         .attr("x1", (d) => d.x1)
         .attr("y1", (d) => d.y1)
         .attr("x2", (d) => d.x2)
-        .attr("y2", (d) => d.y2);
+        .attr("y2", (d) => d.y2)
+        .call(dragLine);
       const circle1 = svg.selectAll("circle.c1").data(linesArr, (d) => d.id);
       circle1.exit().remove();
       circle1.attr("cx", (d) => d.x1).attr("cy", (d) => d.y1);
