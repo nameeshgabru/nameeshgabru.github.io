@@ -19120,7 +19120,7 @@
         .enter()
         .append("line")
         .style("stroke", document.querySelector("#select_color").value)
-        .style("stroke-width", "4px")
+        .style("stroke-width", "2px")
         .attr("x1", (d) => d.x1)
         .attr("y1", (d) => d.y1)
         .attr("x2", (d) => d.x2)
@@ -19130,6 +19130,9 @@
       let contextFunction = (d) => {
         pressTimer = setTimeout(() => {
           linesArr.splice(d.id, 1);
+          for (let index = 0; index < linesArr.length; index++) {
+            linesArr[index]["id"] = index;
+          }
           updateLines();
         }, 600);
       };
@@ -19147,6 +19150,9 @@
         .on("contextmenu", function (event, d) {
           event.preventDefault();
           linesArr.splice(d.id, 1);
+          for (let index = 0; index < linesArr.length; index++) {
+            linesArr[index]["id"] = index;
+          }
           updateLines();
         })
         .on("touchstart", function (event, d) {
@@ -19175,6 +19181,12 @@
             linesArr[index]["id"] = index;
           }
           updateLines();
+        })
+        .on("touchstart", function (event, d) {
+          contextFunction(d);
+        })
+        .on("touchend touchmove", function (event, d) {
+          clearTimeout(pressTimer);
         })
         .call(drag2);
     }
