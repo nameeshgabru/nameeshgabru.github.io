@@ -169,7 +169,7 @@
     </div>
 
     <p class="speech-output" id="speech_output"></p>
-
+    <p id="current_line"></p>
     <div>
       <button id="select_all">Select All</button>
     </div>
@@ -181,7 +181,7 @@ On a rainy afternoon, little Maya sat by the window, watching raindrops race dow
 
     <div>
       use this while sending text as params :
-      `$url\?text=$yourString.replace(/[^a-zA-Z0-9]/g, '')`
+      `$url\?text=$yourString.replace(/[^a-zA-Z0-9. ]/g, '')`
     </div>
     <script>
       let pitch = 1;
@@ -252,6 +252,7 @@ On a rainy afternoon, little Maya sat by the window, watching raindrops race dow
       }
       paused = false;
       function speakSentence(cb) {
+        document.getElementById("current_line").textContent = sentences[speakingIndex];
         let utter = new SpeechSynthesisUtterance(sentences[speakingIndex]);
         utter.onend = function () {
           if (paused === false) {
