@@ -190,7 +190,10 @@ On a rainy afternoon, little Maya sat by the window, watching raindrops race dow
       const params = new URLSearchParams(window.location.search);
       let text = params.get("text");
       if (text) {
-        document.getElementById("text_input").value = text;
+        document.getElementById("text_input").value = text.replace(
+          /[^a-zA-Z0-9. ]/g,
+          ""
+        );
       }
       let voices = window.speechSynthesis.getVoices();
       let selectedVoice;
@@ -252,7 +255,8 @@ On a rainy afternoon, little Maya sat by the window, watching raindrops race dow
       }
       paused = false;
       function speakSentence(cb) {
-        document.getElementById("current_line").textContent = sentences[speakingIndex];
+        document.getElementById("current_line").textContent =
+          sentences[speakingIndex];
         let utter = new SpeechSynthesisUtterance(sentences[speakingIndex]);
         utter.onend = function () {
           if (paused === false) {
