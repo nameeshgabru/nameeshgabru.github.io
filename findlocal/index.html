@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find Local</title>
+  </head>
+  <body>
+    <script>
+      async function scanLocalNetwork() {
+        const baseIP = "http://192.168.1.";
+        const activeIPs = [];
+
+        const requests = [];
+
+        for (let i = 1; i <= 100; i++) {
+          const ip = baseIP + i + ':3000';
+
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 1500);
+
+          const request = fetch(ip, {
+            method: "GET",
+            mode: "no-cors",
+            signal: controller.signal,
+          })
+            .then(() => {
+              // If fetch resolves, the IP responded
+              activeIPs.push(ip);
+            })
+            .catch(() => {
+              // Failed or timed out
+            })
+            .finally(() => {
+              clearTimeout(timeout);
+            });
+
+          requests.push(request);
+        }
+
+        await Promise.all(requests);
+        return activeIPs;
+      }
+
+      // Usage
+      scanLocalNetwork().then((result) => {
+        console.log("Responsive IPs:", result);
+      });
+    </script>
+  </body>
+</html>
